@@ -31,13 +31,16 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SideEffectFree
 @Tags({"JSON", "Parse"})
 @CapabilityDescription("Gather lineage information to register with Atlas")
 public class JsonToAttributesShredder extends AbstractProcessor {
 	//private List<PropertyDescriptor> properties;
 	private Set<Relationship> relationships;
-	final ComponentLog logger = getLogger();
+	private ComponentLog logger = null;
 	final Map<String,String> flattenedPaylod = new HashMap<String,String>();
 	
 	public static final String MATCH_ATTR = "match";
@@ -72,7 +75,7 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	public void onTrigger(ProcessContext context, ProcessSession session) throws ProcessException {
 		final AtomicReference<String> flowFileContents = new AtomicReference<>();
 		ProvenanceReporter provRep = session.getProvenanceReporter();
-		
+		logger = getLogger();
 		FlowFile flowFile = session.get();
 
 	    session.read(flowFile, new InputStreamCallback() {
