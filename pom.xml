@@ -26,11 +26,6 @@
             <artifactId>nifi-processor-utils</artifactId>
             <version>${nifi.version}</version>
         </dependency>
-        <dependency>
-    		<groupId>org.apache.nifi</groupId>
-    		<artifactId>nifi-data-provenance-utils</artifactId>
-        	<version>${nifi.version}</version>
-        </dependency>
 		<!--<dependency>
     		<groupId>org.apache.atlas</groupId>
     		<artifactId>atlas-client</artifactId>
@@ -92,13 +87,11 @@
     		<artifactId>jersey-client</artifactId>
     		<version>1.19.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-simple</artifactId>
-    <version>1.7.22</version>
-</dependency>
-		
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-simple</artifactId>
+    		<version>1.7.22</version>
+		</dependency>
 	</dependencies>
     <build>
         <plugins>

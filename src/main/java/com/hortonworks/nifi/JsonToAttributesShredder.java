@@ -18,7 +18,6 @@ import org.apache.nifi.annotation.behavior.SideEffectFree;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.flowfile.FlowFile;
-import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.AbstractProcessor;
 import org.apache.nifi.processor.ProcessContext;
 import org.apache.nifi.processor.ProcessSession;
@@ -31,16 +30,13 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @SideEffectFree
 @Tags({"JSON", "Parse"})
 @CapabilityDescription("Gather lineage information to register with Atlas")
 public class JsonToAttributesShredder extends AbstractProcessor {
 	//private List<PropertyDescriptor> properties;
 	private Set<Relationship> relationships;
-	private ComponentLog logger = null;
+	//private ComponentLog logger = null;
 	final Map<String,String> flattenedPaylod = new HashMap<String,String>();
 	
 	public static final String MATCH_ATTR = "match";
@@ -74,8 +70,8 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	@Override
 	public void onTrigger(ProcessContext context, ProcessSession session) throws ProcessException {
 		final AtomicReference<String> flowFileContents = new AtomicReference<>();
-		ProvenanceReporter provRep = session.getProvenanceReporter();
-		logger = getLogger();
+		//ProvenanceReporter provRep = session.getProvenanceReporter();
+		getLogger();
 		FlowFile flowFile = session.get();
 
 	    session.read(flowFile, new InputStreamCallback() {
@@ -86,7 +82,7 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	                flowFileContents.set(json); 
 	            }catch(Exception ex){
 	                ex.printStackTrace();
-	                logger.error("Failed to read json string.");
+	                getLogger().error("Failed to read json string.");
 	            }
 	        }
 	    });
@@ -104,22 +100,22 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 			while(jsonFieldsIterator.hasNext()){
 				Entry<String, JsonNode> currentNodeEntry = jsonFieldsIterator.next(); 
 				if(currentNodeEntry.getValue().isArray()){
-					logger.debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Array");
+					getLogger().debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Array");
 					fqnPath.add(currentNodeEntry.getKey());
 					handleArray(currentNodeEntry.getValue(), fqnPath);
 				}else if(currentNodeEntry.getValue().isObject()){
-					logger.debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Object");
+					getLogger().debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Object");
 					fqnPath.add(currentNodeEntry.getKey());
 					handleObject(currentNodeEntry.getValue(), fqnPath);
 				}else{
 					if(currentNodeEntry.getValue().isNumber()){
-						logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
 					}else if(currentNodeEntry.getValue().isBoolean()){
-						logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getBooleanValue()));
 					}else{
-						logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), currentNodeEntry.getValue().getTextValue());
 					}
 				}
@@ -133,7 +129,6 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	}
 			
 	private ArrayList<Object> handleArray(JsonNode json, List<String> fqnPath){
-		final ComponentLog logger = getLogger();
 		//System.out.println("Array Length: " + json.size());
 		for(int i=0; i<json.size(); i++){
 			fqnPath.add(String.valueOf(i));
@@ -142,22 +137,22 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 			while(jsonFieldsIterator.hasNext()){
 				Entry<String, JsonNode> currentNodeEntry = jsonFieldsIterator.next(); 
 				if(currentNodeEntry.getValue().isArray()){
-					logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Array");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Array");
 					fqnPath.add(currentNodeEntry.getKey());
 					handleArray(currentNodeEntry.getValue(), fqnPath);
 				}else if(currentNodeEntry.getValue().isObject()){
-					logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Object");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Object");
 					fqnPath.add(currentNodeEntry.getKey());
 					handleObject(currentNodeEntry.getValue(), fqnPath);
 				}else{
 					if(currentNodeEntry.getValue().isNumber()){
-						logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
 					}else if(currentNodeEntry.getValue().isBoolean()){
-						logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getBooleanValue()));
 					}else{
-						logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), currentNodeEntry.getValue().getTextValue());
 					}
 				}
@@ -174,22 +169,22 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		while(jsonFieldsIterator.hasNext()){
 			Entry<String, JsonNode> currentNodeEntry = jsonFieldsIterator.next(); 
 			if(currentNodeEntry.getValue().isArray()){
-				logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Array");
+				getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Array");
 				fqnPath.add(currentNodeEntry.getKey());
 				handleArray(currentNodeEntry.getValue(), fqnPath);
 			}else if(currentNodeEntry.getValue().isObject()){
-				logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Object");
+				getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | Data Type: Object");
 				fqnPath.add(currentNodeEntry.getKey());
 				handleObject(currentNodeEntry.getValue(), fqnPath);
 			}else{
 				if(currentNodeEntry.getValue().isNumber()){
-					logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
 					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
 				}else if(currentNodeEntry.getValue().isBoolean()){
-					logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
 					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getBooleanValue()));
 				}else{
-					logger.debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
 					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), currentNodeEntry.getValue().getTextValue());
 				}
 			}					
