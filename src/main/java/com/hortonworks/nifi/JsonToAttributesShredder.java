@@ -194,9 +194,14 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	}
 			
 	private String getFQN(List<String> fqnPathList, String fieldName){
-		String[] fqnPathArray = new String[fqnPathList.size()];
-		fqnPathArray = fqnPathList.toArray(fqnPathArray);
-		String fqnString = String.join(".", fqnPathArray) + "." + fieldName;
+		String fqnString = "";
+		if(fqnPathList.size()>0){
+			String[] fqnPathArray = new String[fqnPathList.size()];
+			fqnPathArray = fqnPathList.toArray(fqnPathArray);
+			fqnString = String.join("_", fqnPathArray) + "_" + fieldName;
+		}else{
+			fqnString = fieldName;
+		}
 		return fqnString;
 	}	   
 }
