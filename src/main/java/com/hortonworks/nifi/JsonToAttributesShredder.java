@@ -1,5 +1,6 @@
 package com.hortonworks.nifi;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -81,20 +82,22 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		FlowFile flowFile = session.get();
 		if ( flowFile == null ) {
         	flowFile = session.create();
-        
-	    session.read(flowFile, new InputStreamCallback() {
-	        @Override
-	        public void process(InputStream in) throws IOException {
-	            try{
-	                String json = IOUtils.toString(in);
-	                flowFileContents.set(json); 
-	            }catch(Exception ex){
-	                ex.printStackTrace();
-	                getLogger().error("Failed to read json string.");
-	            }
-	        }
-	    });
-		
+		}
+	    
+	    try {
+            session.read(flowFile, new InputStreamCallback() {
+                @Override
+                public void process(final InputStream in) throws IOException {
+                    String json = IOUtils.toString(in);
+                    flowFileContents.set(json);
+                }
+            });
+        } catch (final ProcessException pe) {
+            getLogger().error("Failed to parse {} as JSON due to {}; routing to failure", new Object[] {flowFile, pe.toString()}, pe);
+            session.transfer(flowFile, REL_FAIL);
+            return;
+        }
+	    
 		String json = flowFileContents.get();
 		System.out.println(json);
 				
@@ -134,10 +137,6 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		
 		flowFile = session.putAllAttributes(flowFile, flattenedPaylod);
 		session.transfer(flowFile, REL_SUCCESS);
-		}else{
-			getLogger().error("Flow File session is null");
-			session.transfer(flowFile, REL_FAIL);
-		}
 			
 	}
 			
