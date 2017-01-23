@@ -47,10 +47,15 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
 	        .build();
 	*/
-	public static final Relationship SUCCESS = new Relationship.Builder()
+	public static final Relationship REL_SUCCESS = new Relationship.Builder()
 	        .name("SUCCESS")
 	        .description("Succes relationship")
 	        .build();
+	
+    public static final Relationship REL_FAIL = new Relationship.Builder()
+            .name("FAIL")
+            .description("FlowFiles are routed to this relationship when JSON cannot be parsed")
+            .build();
 	
 	public void init(final ProcessorInitializationContext context){
 	    /*List<PropertyDescriptor> properties = new ArrayList<>();
@@ -58,7 +63,8 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	    this.properties = Collections.unmodifiableList(properties);
 		*/
 	    Set<Relationship> relationships = new HashSet<Relationship>();
-	    relationships.add(SUCCESS);
+	    relationships.add(REL_SUCCESS);
+	    relationships.add(REL_FAIL);
 	    this.relationships = Collections.unmodifiableSet(relationships);
 	}
 
@@ -73,7 +79,9 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		//ProvenanceReporter provRep = session.getProvenanceReporter();
 		getLogger();
 		FlowFile flowFile = session.get();
-
+		if ( flowFile == null ) {
+        	flowFile = session.create();
+        
 	    session.read(flowFile, new InputStreamCallback() {
 	        @Override
 	        public void process(InputStream in) throws IOException {
@@ -126,6 +134,11 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		
 		flowFile = session.putAllAttributes(flowFile, flattenedPaylod);
 		session.transfer(flowFile);
+		}else{
+			getLogger().error("Flow File session is null");
+			//session.transfer(flowFile);
+		}
+			
 	}
 			
 	private ArrayList<Object> handleArray(JsonNode json, List<String> fqnPath){
