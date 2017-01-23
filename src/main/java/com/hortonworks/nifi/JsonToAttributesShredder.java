@@ -30,6 +30,7 @@ import org.apache.nifi.provenance.ProvenanceReporter;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.ObjectMapper;
 
 @SideEffectFree
 @Tags({"JSON", "Parse"})
@@ -76,68 +77,59 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 	
 	@Override
 	public void onTrigger(ProcessContext context, ProcessSession session) throws ProcessException {
-		final AtomicReference<String> flowFileContents = new AtomicReference<>();
 		//ProvenanceReporter provRep = session.getProvenanceReporter();
-		getLogger();
+
 		FlowFile flowFile = session.get();
 		if ( flowFile == null ) {
         	flowFile = session.create();
 		}
-	    
-	    try {
-            session.read(flowFile, new InputStreamCallback() {
-                @Override
-                public void process(final InputStream in) throws IOException {
-                    String json = IOUtils.toString(in);
-                    flowFileContents.set(json);
-                }
-            });
-        } catch (final ProcessException pe) {
-            getLogger().error("Failed to parse {} as JSON due to {}; routing to failure", new Object[] {flowFile, pe.toString()}, pe);
-            session.transfer(flowFile, REL_FAIL);
-            return;
-        }
-	    
-		String json = flowFileContents.get();
-		System.out.println(json);
-				
-		JsonFactory jsonFactory = new JsonFactory();
+		
+		final ObjectMapper mapper = new ObjectMapper();
+		final AtomicReference<JsonNode> rootNodeRef = new AtomicReference<>(null);
 		try {
-			JsonParser jp = jsonFactory.createJsonParser(json);
-			//jp.setCodec(new ObjectMapper());
-			JsonNode jsonNode = jp.readValueAsTree();
-			List<String> fqnPath = new ArrayList<String>();
-			Iterator<Entry<String, JsonNode>> jsonFieldsIterator = jsonNode.getFields();
-			while(jsonFieldsIterator.hasNext()){
-				Entry<String, JsonNode> currentNodeEntry = jsonFieldsIterator.next(); 
-				if(currentNodeEntry.getValue().isArray()){
-					getLogger().debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Array");
-					fqnPath.add(currentNodeEntry.getKey());
-					handleArray(currentNodeEntry.getValue(), fqnPath);
-				}else if(currentNodeEntry.getValue().isObject()){
-					getLogger().debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Object");
-					fqnPath.add(currentNodeEntry.getKey());
-					handleObject(currentNodeEntry.getValue(), fqnPath);
-				}else{
-					if(currentNodeEntry.getValue().isNumber()){
-						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
-						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
-					}else if(currentNodeEntry.getValue().isBoolean()){
-						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
-						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getBooleanValue()));
-					}else{
-						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
-						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), currentNodeEntry.getValue().getTextValue());
+			session.read(flowFile, new InputStreamCallback() {
+				@Override
+				public void process(final InputStream in) throws IOException {
+					try (final InputStream bufferedIn = new BufferedInputStream(in)) {
+						rootNodeRef.set(mapper.readTree(bufferedIn));
 					}
 				}
+			});
+		} catch (final ProcessException pe) {
+			getLogger().error("Failed to parse {} as JSON due to {}; routing to failure", new Object[] {flowFile, pe.toString()}, pe);
+			session.transfer(flowFile, REL_FAIL);
+			return;
+		}
+
+	    final JsonNode rootNode = rootNodeRef.get();
+		List<String> fqnPath = new ArrayList<String>();
+		Iterator<Entry<String, JsonNode>> jsonFieldsIterator = rootNode.getFields();
+		while(jsonFieldsIterator.hasNext()){
+			Entry<String, JsonNode> currentNodeEntry = jsonFieldsIterator.next(); 
+			if(currentNodeEntry.getValue().isArray()){
+				getLogger().debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Array");
+				fqnPath.add(currentNodeEntry.getKey());
+				handleArray(currentNodeEntry.getValue(), fqnPath);
+			}else if(currentNodeEntry.getValue().isObject()){
+				getLogger().debug("Current Field: " + currentNodeEntry.getKey() + " | Data Type: Object");
+				fqnPath.add(currentNodeEntry.getKey());
+				handleObject(currentNodeEntry.getValue(), fqnPath);
+			}else{
+				if(currentNodeEntry.getValue().isNumber()){
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
+				}else if(currentNodeEntry.getValue().isBoolean()){
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
+					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getBooleanValue()));
+				}else{
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getTextValue() + " | Data Type: String Primitive");
+					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), currentNodeEntry.getValue().getTextValue());
+				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		
 		flowFile = session.putAllAttributes(flowFile, flattenedPaylod);
 		session.transfer(flowFile, REL_SUCCESS);
-			
 	}
 			
 	private ArrayList<Object> handleArray(JsonNode json, List<String> fqnPath){
