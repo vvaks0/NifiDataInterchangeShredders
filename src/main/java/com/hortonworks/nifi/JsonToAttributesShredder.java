@@ -133,10 +133,10 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		}
 		
 		flowFile = session.putAllAttributes(flowFile, flattenedPaylod);
-		session.transfer(flowFile);
+		session.transfer(flowFile, REL_SUCCESS);
 		}else{
 			getLogger().error("Flow File session is null");
-			//session.transfer(flowFile);
+			session.transfer(flowFile, REL_FAIL);
 		}
 			
 	}
