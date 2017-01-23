@@ -30,7 +30,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 @SideEffectFree
 @Tags({"JSON", "Parse"})
-@CapabilityDescription("Gather lineage information to register with Atlas")
+@CapabilityDescription("Shred deeply nested JSON payload into flattened attributes")
 public class JsonToAttributesShredder extends AbstractProcessor {
 	//private List<PropertyDescriptor> properties;
 	private Set<Relationship> relationships;
