@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import org.apache.nifi.annotation.behavior.SideEffectFree;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
+import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.processor.AbstractProcessor;
 import org.apache.nifi.processor.ProcessContext;
@@ -27,24 +28,26 @@ import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.io.InputStreamCallback;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.XML;
 
 @SideEffectFree
-@Tags({"JSON", "Parse"})
+@Tags({"JSON", "XML", "Parse"})
 @CapabilityDescription("Shred deeply nested JSON payload into flattened attributes")
-public class JsonToAttributesShredder extends AbstractProcessor {
-	//private List<PropertyDescriptor> properties;
+public class JsonXmlToAttributesShredder extends AbstractProcessor {
+	private List<PropertyDescriptor> properties;
 	private Set<Relationship> relationships;
-	//private ComponentLog logger = null;
 	final Map<String,String> flattenedPaylod = new HashMap<String,String>();
 	
 	public static final String MATCH_ATTR = "match";
 
-	/*public static final PropertyDescriptor JSON_PATH = new PropertyDescriptor.Builder()
-	        .name("Json Path")
-	        .required(true)
-	        .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
-	        .build();
-	*/
+	static final PropertyDescriptor SHREDDER_TYPE = new PropertyDescriptor.Builder()
+            .name("Shredder Type")
+            .description("The URL of the Atlas Server")
+            .required(true)
+            .allowableValues("json", "xml")
+            .defaultValue("json")
+            .build();
+	
 	public static final Relationship REL_SUCCESS = new Relationship.Builder()
 	        .name("SUCCESS")
 	        .description("Succes relationship")
@@ -56,10 +59,10 @@ public class JsonToAttributesShredder extends AbstractProcessor {
             .build();
 	
 	public void init(final ProcessorInitializationContext context){
-	    /*List<PropertyDescriptor> properties = new ArrayList<>();
-	    properties.add(JSON_PATH);
+	    List<PropertyDescriptor> properties = new ArrayList<>();
+	    properties.add(SHREDDER_TYPE);
 	    this.properties = Collections.unmodifiableList(properties);
-		*/
+		
 	    Set<Relationship> relationships = new HashSet<Relationship>();
 	    relationships.add(REL_SUCCESS);
 	    relationships.add(REL_FAIL);
@@ -81,18 +84,23 @@ public class JsonToAttributesShredder extends AbstractProcessor {
 		}
 		
 		final ObjectMapper mapper = new ObjectMapper();
+		final String shredderType = context.getProperty(SHREDDER_TYPE).getValue();
 		final AtomicReference<JsonNode> rootNodeRef = new AtomicReference<>(null);
 		try {
 			session.read(flowFile, new InputStreamCallback() {
 				@Override
 				public void process(final InputStream in) throws IOException {
 					try (final InputStream bufferedIn = new BufferedInputStream(in)) {
-						rootNodeRef.set(mapper.readTree(bufferedIn));
+						if(shredderType.equalsIgnoreCase("json")){
+							rootNodeRef.set(mapper.readTree(bufferedIn));
+						}else{
+							rootNodeRef.set(mapper.readTree(XML.toString(bufferedIn)));
+						}
 					}
 				}
 			});
 		} catch (final ProcessException pe) {
-			getLogger().error("Failed to parse {} as JSON due to {}; routing to failure", new Object[] {flowFile, pe.toString()}, pe);
+			getLogger().error("Failed to parse {} due to {}; routing to failure", new Object[] {flowFile, pe.toString()}, pe);
 			session.transfer(flowFile, REL_FAIL);
 			return;
 		}

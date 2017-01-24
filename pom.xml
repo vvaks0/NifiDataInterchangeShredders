@@ -66,24 +66,27 @@
     		<artifactId>json4s-native_2.10</artifactId>
     		<version>3.3.0</version>
 		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl -->
 		<dependency>
     		<groupId>org.codehaus.jackson</groupId>
     		<artifactId>jackson-core-asl</artifactId>
     		<version>1.9.13</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl -->
 		<dependency>
     		<groupId>org.codehaus.jackson</groupId>
     		<artifactId>jackson-mapper-asl</artifactId>
     		<version>1.9.13</version>
-		</dependency>		
+		</dependency>
+		<dependency>
+    		<groupId>org.json</groupId>
+    		<artifactId>json</artifactId>
+    		<version>20160810</version>
+		</dependency>
 		<dependency>
     		<groupId>commons-configuration</groupId>
     		<artifactId>commons-configuration</artifactId>
     		<version>1.10</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
     		<groupId>com.google.guava</groupId>
     		<artifactId>guava-base</artifactId>
     		<version>r03</version>
@@ -97,7 +100,7 @@
     		<groupId>org.slf4j</groupId>
     		<artifactId>slf4j-simple</artifactId>
     		<version>1.7.22</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
     <build>
         <plugins>
