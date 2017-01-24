@@ -75,6 +75,11 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 	}
 	
 	@Override
+    protected List<PropertyDescriptor> getSupportedPropertyDescriptors() {
+        return properties;
+    }
+	
+	@Override
 	public void onTrigger(ProcessContext context, ProcessSession session) throws ProcessException {
 		//ProvenanceReporter provRep = session.getProvenanceReporter();
 
