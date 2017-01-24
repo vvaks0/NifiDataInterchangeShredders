@@ -42,7 +42,7 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 
 	static final PropertyDescriptor SHREDDER_TYPE = new PropertyDescriptor.Builder()
             .name("Shredder Type")
-            .description("The URL of the Atlas Server")
+            .description("The expected format of the payload. Either JSON or XML")
             .required(true)
             .allowableValues("json", "xml")
             .defaultValue("json")
