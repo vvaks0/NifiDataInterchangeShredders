@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.nifi.annotation.behavior.SideEffectFree;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
@@ -99,7 +100,7 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 						if(shredderType.equalsIgnoreCase("json")){
 							rootNodeRef.set(mapper.readTree(bufferedIn));
 						}else{
-							rootNodeRef.set(mapper.readTree(XML.toString(bufferedIn)));
+							rootNodeRef.set(mapper.readTree(XML.toJSONObject(IOUtils.toString(bufferedIn)).toString()));
 						}
 					}
 				}
