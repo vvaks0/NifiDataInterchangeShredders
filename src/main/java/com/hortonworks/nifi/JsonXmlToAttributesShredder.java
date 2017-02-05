@@ -126,7 +126,7 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 				handleObject(currentNodeEntry.getValue(), fqnPath);
 			}else{
 				if(currentNodeEntry.getValue().isNumber()){
-					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numeric Primitive");
 					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
 				}else if(currentNodeEntry.getValue().isBoolean()){
 					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
@@ -160,7 +160,7 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 					handleObject(currentNodeEntry.getValue(), fqnPath);
 				}else{
 					if(currentNodeEntry.getValue().isNumber()){
-						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numeric Primitive");
 						flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
 					}else if(currentNodeEntry.getValue().isBoolean()){
 						getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
@@ -192,7 +192,7 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 				handleObject(currentNodeEntry.getValue(), fqnPath);
 			}else{
 				if(currentNodeEntry.getValue().isNumber()){
-					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numberic Primitive");
+					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getNumberValue() + " | Data Type: Numeric Primitive");
 					flattenedPaylod.put(getFQN(fqnPath, currentNodeEntry.getKey()), String.valueOf(currentNodeEntry.getValue().getNumberValue()));
 				}else if(currentNodeEntry.getValue().isBoolean()){
 					getLogger().debug("Current Field: " + getFQN(fqnPath, currentNodeEntry.getKey()) + " | " + currentNodeEntry.getValue().getBooleanValue() + " | Data Type: Booleen Primitive");
