@@ -199,6 +199,7 @@ public class StreamingSelfService extends AbstractProcessor {
 		final AtomicReference<JsonNode> data = new AtomicReference<>(null);
 		try {
 			session.read(flowFile, new InputStreamCallback() {
+				@Override
 				public void process(final InputStream in) throws IOException {
 					try (final InputStream bufferedIn = new BufferedInputStream(in)) {
 						data.set(mapper.readTree(bufferedIn));
