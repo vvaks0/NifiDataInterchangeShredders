@@ -27,32 +27,6 @@
             <version>${nifi.version}</version>
         </dependency>
 		<dependency>
-    		<groupId>org.apache.atlas</groupId>
-    		<artifactId>atlas-client</artifactId>
-    		<version>0.7-incubating</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.apache.atlas</groupId>
-    		<artifactId>atlas-typesystem</artifactId>
-    		<version>0.7-incubating</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.apache.atlas</groupId>
-    		<artifactId>atlas-common</artifactId>
-    		<version>0.7-incubating</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.apache.kafka</groupId>
-    		<artifactId>kafka-clients</artifactId>
-    		<version>0.10.1.1</version>
-		</dependency>
-		
-		<dependency>
-    		<groupId>org.apache.kafka</groupId>
-    		<artifactId>kafka_2.10</artifactId>
-    		<version>0.10.1.1</version>
-		</dependency>
-		<dependency>
     		<groupId>org.apache.phoenix</groupId>
     		<artifactId>phoenix-core</artifactId>
     		<version>4.7.0-HBase-1.1</version>
@@ -102,17 +76,17 @@
     		<groupId>org.codehaus.jackson</groupId>
     		<artifactId>jackson-mapper-asl</artifactId>
     		<version>1.9.13</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
     		<groupId>org.json</groupId>
     		<artifactId>json</artifactId>
     		<version>20160810</version>
-		</dependency
+		</dependency>
 		<dependency>
     		<groupId>commons-configuration</groupId>
     		<artifactId>commons-configuration</artifactId>
     		<version>1.10</version>
-		</dependency>>-->
+		</dependency>
 	</dependencies>
     <build>
         <plugins>
