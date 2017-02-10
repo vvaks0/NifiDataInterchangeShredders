@@ -195,6 +195,7 @@ public class StreamingSelfService extends AbstractProcessor {
 		String schemaGroup = flowFile.getAttribute("schemaGroup");
 		String schemaName = topicName + ":v";
 		
+		/*
 		final ObjectMapper mapper = new ObjectMapper();
 		final AtomicReference<JsonNode> data = new AtomicReference<>(null);
 		try {
@@ -210,9 +211,9 @@ public class StreamingSelfService extends AbstractProcessor {
 			getLogger().error("Failed to parse {} due to {}; routing to failure", new Object[] {flowFile, pe.toString()}, pe);
 			session.transfer(flowFile, REL_FAIL);
 			return;
-		}
-		String jsonData = data.get().toString();
-		
+		}*/
+		//String jsonData = data.get().toString();
+		String jsonData = flowFile.getAttribute("payload");
 		try {
 			Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
 			phoenixConnection = DriverManager.getConnection("jdbc:phoenix:"+ zkHbaseUri);
