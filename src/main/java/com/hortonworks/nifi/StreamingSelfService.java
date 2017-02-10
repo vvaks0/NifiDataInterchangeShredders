@@ -46,6 +46,7 @@ import org.apache.nifi.processor.ProcessorInitializationContext;
 import org.apache.nifi.processor.Relationship;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.io.InputStreamCallback;
+import org.apache.nifi.processor.util.StandardValidators;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
@@ -86,6 +87,7 @@ public class StreamingSelfService extends AbstractProcessor {
             .required(true)
             //.allowableValues("json", "xml")
             .defaultValue("http://loanmaker01-238-3-2.field.hortonworks.com:8095")
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 	
 	static final PropertyDescriptor NIFI_URL = new PropertyDescriptor.Builder()
@@ -93,6 +95,7 @@ public class StreamingSelfService extends AbstractProcessor {
             .description("Url where Nifi is running")
             .required(true)
             .defaultValue("http://hdf01.field.hortonworks.com:9090")
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 	
 	static final PropertyDescriptor REGISTRY_URL = new PropertyDescriptor.Builder()
@@ -100,6 +103,7 @@ public class StreamingSelfService extends AbstractProcessor {
             .description("Url where the Avro Schema Registry is running")
             .required(true)
             .defaultValue("http://hdf01.field.hortonworks.com:9095")
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 	
 	static final PropertyDescriptor ATLAS_URL = new PropertyDescriptor.Builder()
@@ -107,6 +111,7 @@ public class StreamingSelfService extends AbstractProcessor {
             .description("Url where Atlas is running")
             .required(true)
             .defaultValue("http://loanmaker01-238-3-2.field.hortonworks.com:21000")
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 	
 	static final PropertyDescriptor ZK_KAFKA_URL = new PropertyDescriptor.Builder()
@@ -114,6 +119,7 @@ public class StreamingSelfService extends AbstractProcessor {
             .description("Url where Kafka is running")
             .required(true)
             .defaultValue("hdf01.field.hortonworks.com:2181")
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 	
 	static final PropertyDescriptor ZK_PHOENIX_URL = new PropertyDescriptor.Builder()
@@ -121,6 +127,7 @@ public class StreamingSelfService extends AbstractProcessor {
             .description("Url where Phoenix is running")
             .required(true)
             .defaultValue("hdf01.field.hortonworks.com:2182:/hbase")
+            .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
             .build();
 	
 	public static final Relationship REL_SUCCESS = new Relationship.Builder()
