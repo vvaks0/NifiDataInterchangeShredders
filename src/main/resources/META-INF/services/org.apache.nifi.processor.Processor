@@ -1,1 +1,2 @@
 com.hortonworks.nifi.JsonXmlToAttributesShredder
+com.hortonworks.nifi.StreamingSelfService

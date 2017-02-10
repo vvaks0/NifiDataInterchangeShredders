@@ -26,11 +26,28 @@
             <artifactId>nifi-processor-utils</artifactId>
             <version>${nifi.version}</version>
         </dependency>
-		<!--<dependency>
+		<dependency>
     		<groupId>org.apache.atlas</groupId>
     		<artifactId>atlas-client</artifactId>
     		<version>0.7-incubating</version>
 		</dependency>
+		<dependency>
+    		<groupId>org.apache.kafka</groupId>
+    		<artifactId>kafka-clients</artifactId>
+    		<version>0.10.1.1</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.apache.kafka</groupId>
+    		<artifactId>kafka_2.11</artifactId>
+    		<version>0.10.1.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.phoenix</groupId>
+    		<artifactId>phoenix-core</artifactId>
+    		<version>4.7.0-HBase-1.1</version>
+		</dependency>	
+		<!-- 
 		<dependency>
     		<groupId>org.apache.atlas</groupId>
     		<artifactId>atlas-typesystem</artifactId>
@@ -65,7 +82,7 @@
     		<groupId>org.json4s</groupId>
     		<artifactId>json4s-native_2.10</artifactId>
     		<version>3.3.0</version>
-		</dependency>-->
+		</dependency>
 		<dependency>
     		<groupId>org.codehaus.jackson</groupId>
     		<artifactId>jackson-core-asl</artifactId>
@@ -75,7 +92,7 @@
     		<groupId>org.codehaus.jackson</groupId>
     		<artifactId>jackson-mapper-asl</artifactId>
     		<version>1.9.13</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
     		<groupId>org.json</groupId>
     		<artifactId>json</artifactId>
@@ -86,21 +103,6 @@
     		<artifactId>commons-configuration</artifactId>
     		<version>1.10</version>
 		</dependency>
-		<!-- <dependency>
-    		<groupId>com.google.guava</groupId>
-    		<artifactId>guava-base</artifactId>
-    		<version>r03</version>
-		</dependency>	
-		<dependency>
-    		<groupId>com.sun.jersey</groupId>
-    		<artifactId>jersey-client</artifactId>
-    		<version>1.19.1</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.slf4j</groupId>
-    		<artifactId>slf4j-simple</artifactId>
-    		<version>1.7.22</version>
-		</dependency> -->
 	</dependencies>
     <build>
         <plugins>
