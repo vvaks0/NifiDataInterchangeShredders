@@ -176,9 +176,8 @@ public class StreamingSelfService extends AbstractProcessor {
 		zkHbaseUri = context.getProperty(ZK_PHOENIX_URL).getValue();
 		
 		FlowFile flowFile = session.get();
-		if ( flowFile == null ) {
-        	flowFile = session.create();
-		}
+		if ( flowFile != null ) {
+        	//flowFile = session.create();
 		
 		props.setProperty("atlas.conf", "/root");
 		try {
@@ -241,7 +240,7 @@ public class StreamingSelfService extends AbstractProcessor {
 		topicUri = kafkaTopicReferenceable.get("uri").toString();
 		System.out.println("Topic Uri: " + topicUri);
 		createFlow(tableName, topicUri, topicName, schemaGroup, schemaName);
-		
+		}
 	}
 		
 		private Referenceable createKafkaTopic(String topicName, Referenceable schemaReferenceable){
