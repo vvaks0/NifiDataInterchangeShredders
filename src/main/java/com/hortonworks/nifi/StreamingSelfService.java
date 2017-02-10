@@ -85,37 +85,42 @@ public class StreamingSelfService extends AbstractProcessor {
             .description("Url where the Avro Schema Shredder is running")
             .required(true)
             //.allowableValues("json", "xml")
-            //.defaultValue("json")
+            .defaultValue("http://loanmaker01-238-3-2.field.hortonworks.com:8095")
             .build();
 	
 	static final PropertyDescriptor NIFI_URL = new PropertyDescriptor.Builder()
             .name("NIFI Url")
             .description("Url where Nifi is running")
             .required(true)
+            .defaultValue("http://hdf01.field.hortonworks.com:9090")
             .build();
 	
 	static final PropertyDescriptor REGISTRY_URL = new PropertyDescriptor.Builder()
             .name("Registry Url")
             .description("Url where the Avro Schema Registry is running")
             .required(true)
+            .defaultValue("http://hdf01.field.hortonworks.com:9095")
             .build();
 	
 	static final PropertyDescriptor ATLAS_URL = new PropertyDescriptor.Builder()
             .name("Atlas Url")
             .description("Url where Atlas is running")
             .required(true)
+            .defaultValue("http://loanmaker01-238-3-2.field.hortonworks.com:21000")
             .build();
 	
 	static final PropertyDescriptor ZK_KAFKA_URL = new PropertyDescriptor.Builder()
-            .name("Kafka Zookeeper UrL")
+            .name("Kafka Zookeeper Uri")
             .description("Url where Kafka is running")
             .required(true)
+            .defaultValue("hdf01.field.hortonworks.com:2181")
             .build();
 	
 	static final PropertyDescriptor ZK_PHOENIX_URL = new PropertyDescriptor.Builder()
             .name(" Phoenix Zookeeper Uri")
             .description("Url where Phoenix is running")
             .required(true)
+            .defaultValue("hdf01.field.hortonworks.com:2182:/hbase")
             .build();
 	
 	public static final Relationship REL_SUCCESS = new Relationship.Builder()
@@ -131,6 +136,7 @@ public class StreamingSelfService extends AbstractProcessor {
 	public void init(final ProcessorInitializationContext context){
 	    List<PropertyDescriptor> properties = new ArrayList<>();
 	    properties.add(SHREDDER_URL);
+	    properties.add(NIFI_URL);
 	    properties.add(REGISTRY_URL);
 	    properties.add(ATLAS_URL);
 	    properties.add(ZK_KAFKA_URL);
