@@ -240,6 +240,7 @@ public class StreamingSelfService extends AbstractProcessor {
 		topicUri = kafkaTopicReferenceable.get("uri").toString();
 		System.out.println("Topic Uri: " + topicUri);
 		createFlow(tableName, topicUri, topicName, schemaGroup, schemaName);
+		session.transfer(flowFile, REL_SUCCESS);
 		}
 	}
 		
