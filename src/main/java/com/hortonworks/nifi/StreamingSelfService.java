@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,23 +26,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.util.Map.Entry;
-
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.ZkConnection;
 import org.apache.atlas.AtlasClient;
 import org.apache.atlas.AtlasServiceException;
 import org.apache.atlas.typesystem.Referenceable;
 import org.apache.atlas.typesystem.json.InstanceSerialization;
-import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.requests.MetadataResponse.PartitionMetadata;
 import org.apache.nifi.annotation.behavior.SideEffectFree;
@@ -60,7 +51,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.json.XML;
 
 import kafka.admin.AdminUtils;
 import kafka.utils.ZKStringSerializer$;
@@ -86,7 +76,7 @@ public class StreamingSelfService extends AbstractProcessor {
 	private static String atlasUrl = "http://loanmaker01-238-3-2.field.hortonworks.com:21000";
 	private static String zkKafkaUri = "hdf01.field.hortonworks.com:2181";
 	private static String zkHbaseUri = "hdf01.field.hortonworks.com:2182:/hbase";
-	private String hostName = "hdf01";
+	private String hostName;
 	
 	public static final String MATCH_ATTR = "match";
 
@@ -176,6 +166,16 @@ public class StreamingSelfService extends AbstractProcessor {
 		if ( flowFile == null ) {
         	flowFile = session.create();
 		}
+		
+		props.setProperty("atlas.conf", "/root");
+		try {
+			hostName = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		String[] atlasURL = {atlasUrl};
+		atlasClient = new AtlasClient(atlasURL, basicAuth);
+		System.out.println("***************** atlas.conf has been set to: " + props.getProperty("atlas.conf"));
 		
 		String tableName = flowFile.getAttribute("tableName"); 
 		String topicName = flowFile.getAttribute("topicName");
