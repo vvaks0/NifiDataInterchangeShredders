@@ -29,6 +29,7 @@ import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.io.InputStreamCallback;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.XML;
 
 @SideEffectFree
 @Tags({"JSON", "XML", "Parse"})
@@ -99,7 +100,7 @@ public class JsonXmlToAttributesShredder extends AbstractProcessor {
 						if(shredderType.equalsIgnoreCase("json")){
 							rootNodeRef.set(mapper.readTree(bufferedIn));
 						}else{
-							//rootNodeRef.set(mapper.readTree(XML.toJSONObject(IOUtils.toString(bufferedIn)).toString()));
+							rootNodeRef.set(mapper.readTree(XML.toJSONObject(IOUtils.toString(bufferedIn)).toString()));
 						}
 					}
 				}
