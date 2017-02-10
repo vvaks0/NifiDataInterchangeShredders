@@ -194,6 +194,12 @@ public class StreamingSelfService extends AbstractProcessor {
 		String topicName = flowFile.getAttribute("topicName");
 		String schemaGroup = flowFile.getAttribute("schemaGroup");
 		String schemaName = topicName + ":v";
+		String schemaText = flowFile.getAttribute("payload");
+		
+		System.out.println("Table Name: " + tableName);
+		System.out.println("Topic Name: " + topicName);
+		System.out.println("Schema Group: " + schemaGroup);
+		System.out.println("Schema Text: " + schemaText);
 		
 		/*
 		final ObjectMapper mapper = new ObjectMapper();
@@ -213,7 +219,6 @@ public class StreamingSelfService extends AbstractProcessor {
 			return;
 		}*/
 		//String jsonData = data.get().toString();
-		String jsonData = flowFile.getAttribute("payload");
 		try {
 			Class.forName("org.apache.phoenix.jdbc.PhoenixDriver");
 			phoenixConnection = DriverManager.getConnection("jdbc:phoenix:"+ zkHbaseUri);
@@ -223,7 +228,6 @@ public class StreamingSelfService extends AbstractProcessor {
 			e.printStackTrace();
 		}
 			
-		String schemaText = jsonData;
 		String schemaDescription = null;
 		String topicUri = null;
 			
